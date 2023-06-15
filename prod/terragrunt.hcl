@@ -1,12 +1,14 @@
-locals {
-    aws_profile = read_terragrunt_config(find_in_parent_folders("profile.hcl"))
-}
-
 terraform {
     source = "github.com/ShaelinN/terraform-vpcs-module"
 }
 
+include "root" {
+  path = find_in_parent_folders("terragrunt.hcl")
+  expose = true
+}
+
 inputs = {
-    aws_profile = local.aws_profile.locals.aws_profile
+    aws_profile = include.root.locals.aws_profile
+    //shared_credentials_file = include.root.locals.shared_credentials_file
     environment_name = "prod"
 }
