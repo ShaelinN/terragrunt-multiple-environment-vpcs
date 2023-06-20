@@ -8,6 +8,5 @@ include "root" {
 }
 
 inputs = {
-    //aws_profile = include.root.locals.aws_profile
     environment_name = "dev"
 }
