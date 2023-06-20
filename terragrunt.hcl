@@ -1,21 +1,19 @@
 locals {
-    bucket_name = "nshaelin-terraform-backend-bucket"
-    key = "terraform.tfstate"
+    bucket_name = "nshaelin-terraform-terragrunt-backend-bucket"
     aws_region = "af-south-1"
-    //dynamodb_table = "nshaelin-terraform-backend-lock-table"
+    dynamodb_table = "nshaelin-terraform-terragrunt-backend-lock-table"
 
     aws_profile = "AdministratorAccess-427519652828"
-    //shared_credentials_file = "~/.aws/credentials"
 }
 
 remote_state {
     backend = "s3"
     config = {
-        //encrypt        = true
+        encrypt        = true
         bucket         = "${local.bucket_name}"
         key            = "${path_relative_to_include()}/terraform.tfstate"
         region         = local.aws_region
-        //dynamodb_table = "terraform-locks"
+        dynamodb_table = local.dynamodb_table
         profile = "${local.aws_profile}"
     }
     generate = {
@@ -23,22 +21,15 @@ remote_state {
         if_exists = "overwrite_terragrunt"
     }
 }
-/*
-generate "backend" {
-    path = "backend.tf"
+
+generate "provider" {
+    path = "provider.tf"
     if_exists = "overwrite_terragrunt"
 
     contents = <<EOF
-        terraform {
-            backend "s3" {
-                bucket = "${local.bucket_name}"
-                key = "${path_relative_to_include()}/${local.key}"
-                region = "${local.region}"
-                //encrypt = true
-                //dynamodb_table = "${local.dynamodb_table}"
-                profile = "${local.aws_profile}"
-                //shared_credentials_file = "${local.shared_credentials_file}"
-            }
+        provider "aws" {
+            region = ${local.aws_region}
+            profile = ${local.aws_profile}
         }
-    EOF
-}*/
+    EOF    
+}
